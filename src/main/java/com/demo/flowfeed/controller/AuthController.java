@@ -1,4 +1,4 @@
-package com.demo.flowfeed.contoller;
+package com.demo.flowfeed.controller;
 
 
 import org.springframework.http.HttpStatus;
