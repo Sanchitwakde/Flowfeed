@@ -1,6 +1,6 @@
-# FlowFeed Frontend
+# FlowFeed React Frontend
 
-Static frontend for the FlowFeed social feed app.
+React frontend for the FlowFeed social feed app, built with Vite.
 
 ## How to run
 
@@ -10,18 +10,26 @@ Static frontend for the FlowFeed social feed app.
 .\mvnw.cmd spring-boot:run
 ```
 
-2. In a second terminal, serve this folder:
+2. Install frontend dependencies:
 
 ```powershell
 cd frontend
-python -m http.server 3000
+npm install
 ```
 
-3. Open:
+3. Start the React dev server:
+
+```powershell
+npm run dev
+```
+
+4. Open:
 
 ```text
-http://localhost:3000
+http://localhost:5173
 ```
+
+To point the frontend at a different backend URL, set `VITE_API_BASE_URL`.
 
 ## App Flow
 
