@@ -11,7 +11,7 @@ Flowfeed is a Spring Boot social feed API with JWT authentication, user profiles
 - Spring Data JPA
 - MySQL
 - Maven
-- HTML, CSS, and JavaScript frontend
+- React frontend with Vite
 
 ## Requirements
 
@@ -121,10 +121,24 @@ Create post:
 
 ## Frontend
 
-Frontend files are available in:
+The React frontend is available in:
 
 ```text
 frontend/
 ```
 
-Open `frontend/index.html` in a browser or serve the folder with a local static server.
+Install and run it from the `frontend` folder:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend runs on:
+
+```text
+http://localhost:5173
+```
+
+By default it calls the backend at `http://localhost:8080`. To use a different backend URL, set `VITE_API_BASE_URL`.
