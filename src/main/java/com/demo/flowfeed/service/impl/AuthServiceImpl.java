@@ -20,6 +20,7 @@ import com.demo.flowfeed.service.AuthService;
 import com.demo.flowfeed.util.ResponseMapper;
 
 import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -35,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse register(RegisterRequest request) {
+
         if (userRepository.existsByUsername(request.username())) {
             throw new BadRequestException("Username is already taken");
         }
@@ -51,23 +53,41 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         User savedUser = userRepository.save(user);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
+
+        UserDetails userDetails =
+                userDetailsService.loadUserByUsername(savedUser.getEmail());
+
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponse(token, TOKEN_TYPE, ResponseMapper.toUserResponse(savedUser));
+        return new AuthResponse(
+                token,
+                TOKEN_TYPE,
+                ResponseMapper.toUserResponse(savedUser)
+        );
     }
 
     @Override
     public AuthResponse login(LoginRequest request) {
+
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password())
+                new UsernamePasswordAuthenticationToken(
+                        request.email(),
+                        request.password())
         );
 
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new BadRequestException("Invalid email or password"));
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+                .orElseThrow(() ->
+                        new BadRequestException("Invalid email or password"));
+
+        UserDetails userDetails =
+                userDetailsService.loadUserByUsername(user.getEmail());
+
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponse(token, TOKEN_TYPE, ResponseMapper.toUserResponse(user));
+        return new AuthResponse(
+                token,
+                TOKEN_TYPE,
+                ResponseMapper.toUserResponse(user)
+        );
     }
 }
