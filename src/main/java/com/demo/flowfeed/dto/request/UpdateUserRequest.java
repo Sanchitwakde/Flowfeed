@@ -9,6 +9,9 @@ public record UpdateUserRequest(
         String username,
 
         @Size(max = 500, message = "Bio must not exceed 500 characters")
-        String bio
+        String bio,
+
+        @Size(max = 500, message = "Profile photo URL must not exceed 500 characters")
+        String profilePhotoUrl
 ) {
 }

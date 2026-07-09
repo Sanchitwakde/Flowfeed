@@ -16,6 +16,7 @@ public final class ResponseMapper {
                 user.getUsername(),
                 user.getEmail(),
                 user.getBio(),
+                user.getProfilePhotoUrl(),
                 user.getRole(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()

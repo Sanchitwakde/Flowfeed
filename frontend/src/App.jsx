@@ -11,7 +11,8 @@ const emptyAuthForm = {
 
 const emptyProfileForm = {
   username: "",
-  bio: ""
+  bio: "",
+  profilePhotoUrl: ""
 };
 
 function getErrorMessage(payload) {
@@ -46,6 +47,40 @@ function formatDate(value) {
 
 function getInitial(username) {
   return (username || "F").charAt(0).toUpperCase();
+}
+
+function escapeSvgText(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
+function getAvatarSrc(user) {
+  const profilePhotoUrl = user?.profilePhotoUrl?.trim();
+
+  if (profilePhotoUrl) {
+    return profilePhotoUrl;
+  }
+
+  const initial = getInitial(user?.username);
+  const safeInitial = escapeSvgText(initial);
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="${safeInitial}">
+      <defs>
+        <linearGradient id="avatarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#217a61" />
+          <stop offset="100%" stop-color="#e16f5c" />
+        </linearGradient>
+      </defs>
+      <rect width="120" height="120" rx="22" fill="url(#avatarGradient)" />
+      <text x="50%" y="56%" text-anchor="middle" fill="#ffffff" font-family="Aptos, Segoe UI, sans-serif" font-size="54" font-weight="800" dominant-baseline="middle">${safeInitial}</text>
+    </svg>
+  `;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
 export default function App() {
@@ -119,7 +154,8 @@ export default function App() {
 
     setProfileForm({
       username: currentUser.username || "",
-      bio: currentUser.bio || ""
+      bio: currentUser.bio || "",
+      profilePhotoUrl: currentUser.profilePhotoUrl || ""
     });
   }, [currentUser]);
 
@@ -248,6 +284,7 @@ export default function App() {
 
     const username = profileForm.username.trim();
     const bio = profileForm.bio.trim();
+    const profilePhotoUrl = profileForm.profilePhotoUrl.trim();
 
     if (username.length < 3) {
       setAppMessage({ type: "error", text: "Username must be at least 3 characters." });
@@ -258,7 +295,7 @@ export default function App() {
       setIsLoading(true);
       const updatedUser = await apiRequest("/api/users/me", {
         method: "PUT",
-        body: JSON.stringify({ username, bio })
+        body: JSON.stringify({ username, bio, profilePhotoUrl })
       });
 
       setCurrentUser(updatedUser);
@@ -449,7 +486,9 @@ export default function App() {
       <main className="home-layout">
         <aside className="profile-panel">
           <div className="profile-card">
-            <div className="avatar">{getInitial(currentUser?.username)}</div>
+            <div className="avatar">
+              <img src={getAvatarSrc(currentUser)} alt={`${currentUser?.username || "User"} profile`} />
+            </div>
             {!isEditingProfile ? (
               <>
                 <h2>{currentUser?.username || "FlowFeed User"}</h2>
@@ -481,6 +520,16 @@ export default function App() {
                     maxLength="500"
                     placeholder="Tell people about yourself"
                     value={profileForm.bio}
+                    onChange={handleProfileInput}
+                  />
+                </label>
+                <label>
+                  <span>Profile photo URL</span>
+                  <input
+                    name="profilePhotoUrl"
+                    type="url"
+                    placeholder="https://example.com/photo.jpg"
+                    value={profileForm.profilePhotoUrl}
                     onChange={handleProfileInput}
                   />
                 </label>
@@ -551,7 +600,9 @@ export default function App() {
                   <article className="post-card" key={post.id}>
                     <div className="post-topline">
                       <div className="post-author">
-                        <div className="post-avatar">{getInitial(post.user?.username)}</div>
+                        <div className="post-avatar">
+                          <img src={getAvatarSrc(post.user)} alt={`${post.user?.username || "User"} profile`} />
+                        </div>
                         <div>
                           <strong>{post.user?.username || "Unknown"}</strong>
                           <span>{post.user?.email || ""}</span>

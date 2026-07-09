@@ -56,6 +56,10 @@ public class User {
     @Column(length = 500)
     private String bio;
 
+    @Size(max = 500)
+    @Column(length = 500)
+    private String profilePhotoUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;

@@ -41,6 +41,7 @@ public class UserServiceImpl implements UserService {
 
         user.setUsername(request.username());
         user.setBio(request.bio());
+        user.setProfilePhotoUrl(normalizeProfilePhotoUrl(request.profilePhotoUrl()));
 
         return ResponseMapper.toUserResponse(userRepository.save(user));
     }
@@ -49,5 +50,14 @@ public class UserServiceImpl implements UserService {
         String email = CurrentUserUtil.getCurrentUserEmail();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+    }
+
+    private String normalizeProfilePhotoUrl(String profilePhotoUrl) {
+        if (profilePhotoUrl == null) {
+            return null;
+        }
+
+        String trimmedProfilePhotoUrl = profilePhotoUrl.trim();
+        return trimmedProfilePhotoUrl.isEmpty() ? null : trimmedProfilePhotoUrl;
     }
 }
